@@ -60,4 +60,7 @@ backend/.env
 /backend/backend/.env
 /backend/postgres_data
 /postgres_data/
-/backend/static/
+/backend/subjects/
+
+/subjects/
+
