@@ -20,3 +20,12 @@ services:
       - db
     env_file:
       - backend/.env
+  nginx:
+    image: nginx:1.15
+
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+    ports:
+      - "80:80"
+    depends_on:
+      - web
