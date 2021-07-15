@@ -12,9 +12,11 @@ ALLOWED_HOSTS = []
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8081',
+    'https://test-task-9a5a8.web.app/'
 )
 CSRF_TRUSTED_ORIGINS = (
     'http://localhost:8081',
+    'https://test-task-9a5a8.web.app/'
 )
 
 INSTALLED_APPS = [
