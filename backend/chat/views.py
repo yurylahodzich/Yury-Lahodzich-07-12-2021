@@ -12,9 +12,7 @@ class MessageViewSet(mixins.CreateModelMixin,
                      mixins.DestroyModelMixin,
                      mixins.ListModelMixin,
                      GenericViewSet):
-    """
-    A simple ViewSet for viewing and editing accounts.
-    """
+
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = (AllowAny,)

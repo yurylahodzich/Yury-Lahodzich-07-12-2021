@@ -2,98 +2,54 @@
   <div class="submit-form mt-3 mx-auto">
     <p class="headline">Send message</p>
 
-    <div v-if="!submitted">
+    <div>
       <v-form ref="form" lazy-validation>
         <v-text-field
-            v-model="message.sender"
-            :rules="[(v) => !!v || 'Sender is required']"
+            v-model="newMessageForm.sender_id"
             label="Sender"
             type="number"
             required
         ></v-text-field>
         <v-text-field
-            v-model="message.receiver"
-            :rules="[(v) => !!v || 'Receiver is required']"
+            v-model="newMessageForm.receiver_id"
             label="Receiver"
+            type="number"
             required
         ></v-text-field>
         <v-text-field
-            v-model="message.text"
-            :rules="[(v) => !!v || 'Title is required']"
+            v-model="newMessageForm.text"
             label="Text"
             required
         ></v-text-field>
         <v-text-field
-            v-model="message.subject"
-            :rules="[(v) => !!v || 'Subject is required']"
+            v-model="newMessageForm.subject"
             label="Subject"
             required
         ></v-text-field>
       </v-form>
 
-      <v-btn color="primary" class="mt-3" @click="saveMessage">Submit</v-btn>
-    </div>
+      <v-btn :disabled="!isComplete" color="primary" class="mt-3" @click="addMessage(newMessageForm)">Submit</v-btn>
 
-    <div v-else>
-      <v-card class="mx-auto">
-        <v-card-title>
-          Submitted successfully!
-        </v-card-title>
-
-        <v-card-subtitle>
-          Click the button to add new Message.
-        </v-card-subtitle>
-
-        <v-card-actions>
-          <v-btn color="success" @click="newMessage">Add</v-btn>
-        </v-card-actions>
-      </v-card>
     </div>
   </div>
 </template>
 
 <script>
-import MessageDataService from "../services/MessageDataService";
+import {
+  mapActions, mapGetters
+} from "vuex";
 
 export default {
   name: "add-message",
-  data() {
-    return {
-      message: {
-        id: null,
-        sender: null,
-        receiver: null,
-        text: "",
-        subject:"",
-      },
-      submitted: false,
-    };
-  },
+  data: () => ({
+    isFormValid: false,
+  }),
+
   methods: {
-    saveMessage() {
-      var data = {
-        sender_id: this.message.sender,
-        receiver_id: this.message.receiver,
-        text: this.message.text,
-        subject:this.message.subject,
-      };
-
-      MessageDataService.create(data)
-          .then((response) => {
-            this.message.id = response.data.id;
-            console.log(response.data);
-            this.submitted = true;
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-    },
-
-    newMessage() {
-      this.submitted = false;
-      this.message = {};
-    },
+    ...mapActions(["addMessage"]),
   },
+  computed: mapGetters(["newMessageForm","isComplete"]),
+
 };
 </script>
 

@@ -1,111 +1,107 @@
 <template>
-  <v-row align="center" class="list px-3 mx-auto">
-    <v-col cols="12" md="8">
-      <v-text-field v-model="title" label="Search by Person"></v-text-field>
-    </v-col>
+  <div>
+    <v-row align="center" class="list px-3 mx-auto">
+      <v-col cols="12" md="12">
+        <v-text-field v-model="id" name="id"  type="number" label="Search by Person" @input="findById(id) "></v-text-field>
+      </v-col>
 
-    <v-col cols="12" md="4">
-      <v-btn small @click="searchMessage">
-        Search
-      </v-btn>
-    </v-col>
+      <v-col cols="12" sm="12">
+        <v-card class="mx-auto" tile>
+          <v-card-title>Received messages</v-card-title>
 
-    <v-col cols="12" sm="12">
-      <v-card class="mx-auto" tile>
-        <v-card-title>Received messages</v-card-title>
-
-        <v-data-table
-            :headers="headers"
-            :items="receivedMessages"
-            disable-pagination
-            :hide-default-footer="true"
-        >
-          <template v-slot:[`item.actions`]="{item}">
-            <v-icon small @click="deleteMessage(item.id)">mdi-delete</v-icon>
-          </template>
-        </v-data-table>
+          <v-data-table
+              :headers="headers"
+              :items="receivedList"
+              disable-pagination
+              :hide-default-footer="true"
+          >
+            <template v-slot:[`item.actions`]="{item}">
+              <v-icon small @click="dialog = true; currentItem = item;">mdi-delete</v-icon>
+            </template>
+          </v-data-table>
 
 
+        </v-card>
+        <v-card class="mx-auto" tile>
+          <v-card-title>Sent messages</v-card-title>
+
+          <v-data-table
+              :headers="headers"
+              :items="sentList"
+              disable-pagination
+              :hide-default-footer="true"
+          >
+            <template v-slot:[`item.actions`]="{item}">
+              <v-icon small @click="dialog = true; currentItem = item;">mdi-delete</v-icon>
+            </template>
+          </v-data-table>
+
+        </v-card>
+
+      </v-col>
+    </v-row>
+
+    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          Attention
+        </v-card-title>
+
+        <v-card-text>
+         Message will be deleted
+        </v-card-text>
+
+
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
+            @click="localDeleteMessage(currentItem.id)"
+          >
+            I accept
+          </v-btn>
+        </v-card-actions>
       </v-card>
-      <v-card class="mx-auto" tile>
-        <v-card-title>Sent messages</v-card-title>
-
-        <v-data-table
-            :headers="headers"
-            :items="sentMessages"
-            disable-pagination
-            :hide-default-footer="true"
-        >
-          <template v-slot:[`item.actions`]="{ item }">
-            <v-icon small @click="deleteMessage(item.id)">mdi-delete</v-icon>
-          </template>
-        </v-data-table>
-
-      </v-card>
-
-    </v-col>
-  </v-row>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
-import MessageDataService from "../services/MessageDataService";
+
+import {
+  mapGetters,
+  mapActions
+} from "vuex";
 
 export default {
-  name: "messages-list",
+  name: 'MessagesList',
   data() {
     return {
-      receivedMessages: [],
-      sentMessages: [],
-      title: "",
+      id: null,
+      dialog: false,
       headers: [
         {text: "Id", align: "start", value: "id"},
         {text: "Subject", sortable: false, value: "subject"},
         {text: "Text", value: "text", sortable: false},
         {text: "Actions", value: "actions", sortable: false},
       ],
-    };
+      currentItem: null
+    }
   },
   methods: {
-
-    refreshList() {
-      this.searchMessage();
-    },
-
-    searchMessage() {
-      MessageDataService.findById(this.title)
-          .then((response) => {
-            this.receivedMessages = response.data["received"].map(this.getDisplayMessage)
-            this.sentMessages = response.data["sent"].map(this.getDisplayMessage)
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-    },
-
-    deleteMessage(id) {
-      MessageDataService.delete(id)
-          .then(() => {
-            this.refreshList();
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-    },
-
-    getDisplayMessage(message) {
-
-      return {
-        id: message.id,
-        text: message.text.length > 30 ? message.text.substr(0, 30) + "..." : message.text,
-        subject: message.subject.length > 30 ? message.subject.substr(0, 30) + "..." : message.subject
-
-      };
-    },
+    ...mapActions(["findById","deleteMessage"]),
+    localDeleteMessage (itemId) {
+      this.deleteMessage(itemId)
+      this.dialog = false
+    }
   },
-  mounted() {
-
-  },
-};
+  computed: mapGetters(["sentList", "receivedList"]),
+}
 </script>
 
 <style>
