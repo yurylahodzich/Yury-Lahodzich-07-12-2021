@@ -24,8 +24,20 @@ services:
     image: nginx:1.15
 
     volumes:
-      - ./nginx/:/etc/nginx/conf.d/
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
+
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - web
+
+  certbot:
+    image: certbot/certbot:latest
+    command: certonly --noninteractive --webroot --webroot-path=/var/www/certbot --email zymlagzom@gmail.com --agree-tos --no-eff-email -d zymzom.tk
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/logs:/var/log/letsencrypt
+      - /var/www/certbot:/var/www/certbot
