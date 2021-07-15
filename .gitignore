@@ -55,9 +55,9 @@ docs/_build/
 # PyBuilder
 target/
 
-backend/.env
+
 /node_modules
-/backend/backend/.env
+
 /backend/postgres_data
 /postgres_data/
 /backend/subjects/
@@ -71,8 +71,7 @@ node_modules
 
 
 # local env files
-.env.local
-.env.*.local
+
 
 # Log files
 npm-debug.log*
